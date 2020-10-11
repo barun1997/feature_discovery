@@ -67,6 +67,10 @@ class DescribedFeatureOverlay extends StatefulWidget {
   final ContentLocation contentLocation;
   final bool enablePulsingAnimation;
 
+  final double backgroundRadiusCenteredMultiplier;
+
+  final double backgroundRadiusMultiplier;
+
   /// Called just before the overlay is displayed.
   /// This function needs to return a [bool], either from an `async` scope
   /// or as a [Future].
@@ -119,6 +123,10 @@ class DescribedFeatureOverlay extends StatefulWidget {
   /// Duration for overlay dismiss animation.
   final Duration dismissDuration;
 
+  final Color skipButtonColor;
+
+  final Color skipButtonTextColor;
+
   /// Controls whether the overlay should be dismissed on touching outside or not.
   ///
   /// The default value for [barrierDismissible] is `true`.
@@ -149,6 +157,10 @@ class DescribedFeatureOverlay extends StatefulWidget {
     @required this.child,
     this.onOpen,
     this.onComplete,
+    this.skipButtonColor,
+    this.skipButtonTextColor,
+    this.backgroundRadiusCenteredMultiplier,
+    this.backgroundRadiusMultiplier,
     this.onDismiss,
     this.contentLocation = ContentLocation.trivial,
     this.enablePulsingAnimation = true,
@@ -467,7 +479,9 @@ class _DescribedFeatureOverlayState extends State<DescribedFeatureOverlay>
   double _backgroundRadius(Offset anchor) {
     final isBackgroundCentered = _isCloseToTopOrBottom(anchor);
     final backgroundRadius = min(_screenSize.width, _screenSize.height) *
-        (isBackgroundCentered ? 1.0 : 0.7);
+        (isBackgroundCentered
+            ? widget.backgroundRadiusCenteredMultiplier ?? 1.0
+            : widget.backgroundRadiusMultiplier ?? 0.7);
     return backgroundRadius;
   }
 
@@ -700,10 +714,13 @@ class _DescribedFeatureOverlayState extends State<DescribedFeatureOverlay>
           top: 30,
           right: 10,
           child: MaterialButton(
-            color: Theme.of(context).colorScheme.primary,
+            color:
+                widget.skipButtonColor ?? Theme.of(context).colorScheme.primary,
             child: Text(
               'Skip',
-              style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+              style: TextStyle(
+                  color: widget.skipButtonTextColor ??
+                      Theme.of(context).colorScheme.onPrimary),
             ),
             onPressed: () {
               _dismiss();
@@ -875,8 +892,8 @@ class _Pulse extends StatelessWidget {
       : CenterAbout(
           position: anchor,
           child: Container(
-            width: radius * 2,
-            height: radius * 2,
+            width: radius * 1.5,
+            height: radius * 1.5,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: color.withOpacity(opacity),
@@ -953,8 +970,8 @@ class _TapTarget extends StatelessWidget {
   Widget build(BuildContext context) => CenterAbout(
         position: anchor,
         child: Container(
-          height: 2 * radius,
-          width: 2 * radius,
+          height: 1.5 * radius,
+          width: 1.5 * radius,
           child: Opacity(
             opacity: opacity,
             child: RawMaterialButton(
