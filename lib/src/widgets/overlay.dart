@@ -696,6 +696,20 @@ class _DescribedFeatureOverlayState extends State<DescribedFeatureOverlay>
           onPressed: tryCompleteThis,
           child: widget.tapTarget,
         ),
+        Positioned(
+          top: 30,
+          right: 10,
+          child: MaterialButton(
+            color: Theme.of(context).colorScheme.primary,
+            child: Text(
+              'Skip',
+              style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+            ),
+            onPressed: () {
+              _dismiss();
+            },
+          ),
+        ),
       ],
     );
   }
